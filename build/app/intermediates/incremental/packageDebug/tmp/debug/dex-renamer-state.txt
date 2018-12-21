@@ -1,0 +1,4 @@
+#Fri Dec 21 18:27:09 CST 2018
+base.0=/Users/lizixian/Documents/flutter_demo/flutter_gank/build/app/intermediates/transforms/dexMerger/debug/0
+path.0=classes.dex
+renamed.0=classes.dex
