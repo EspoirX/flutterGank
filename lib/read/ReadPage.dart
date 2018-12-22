@@ -24,8 +24,8 @@ class _ReadPageState extends State<ReadPage> {
               new Text("G", style: new TextStyle(color: Color(0xFF4286F4))),
               new Text("e", style: new TextStyle(color: Color(0xFFE84436))),
               new Text("e", style: new TextStyle(color: Color(0xFFFABC05))),
-              new Text("K", style: new TextStyle(color: Color(0xFF34A853))),
-              new Text(" News", style: new TextStyle(color: Color(0xFF4E5780)))
+              new Text("k", style: new TextStyle(color: Color(0xFF34A853))),
+              new Text(" Read", style: new TextStyle(color: Color(0xFF4E5780)))
             ],
           ),
           actions: <Widget>[
