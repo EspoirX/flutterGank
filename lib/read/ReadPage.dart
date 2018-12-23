@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flare_flutter/flare_actor.dart';
+import 'package:nima/nima_actor.dart';
 
 class ReadPage extends StatefulWidget {
   @override
@@ -29,6 +31,9 @@ class _ReadPageState extends State<ReadPage> {
             ],
           ),
         ),
-        body: new Text("2"));
+        body: new NimaActor("assets/robot.nima",
+            alignment: Alignment.center,
+            fit: BoxFit.contain,
+            animation: "Flight"));
   }
 }
