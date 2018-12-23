@@ -69,46 +69,114 @@ class _GankListViewState extends State<GankListView> {
 
   @override
   void initState() {
-    _requestTodayGank();
+    if (gankList.length == 0) {
+      _requestTodayGank();
+    }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     screenWidth = MediaQuery.of(context).size.width;
-    return ListView.builder(
-        itemCount: gankList.length,
-        itemBuilder: (BuildContext context, int index) {
-          return loadItemHolder(gankList[index]);
-        });
+    Widget divider1 = Divider(
+      color: Color(0xFFF4F4F4),
+      height: 32,
+    );
+    return new Container(
+      color: Colors.white,
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+      child: new ListView.separated(
+          itemCount: gankList.length,
+          itemBuilder: (BuildContext context, int index) {
+            return loadItemHolder(gankList[index]);
+          },
+          separatorBuilder: (BuildContext context, int index) {
+            return divider1;
+          }),
+    );
   }
 
   loadItemHolder(TodayGank info) {
     String createdAt = info.createdAt;
     createdAt = createdAt.substring(0, createdAt.indexOf('T'));
 
+    return new Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        new Text(
+          info.desc,
+          style: new TextStyle(
+              color: Color(0xFF404450), fontSize: 16, height: 1.1),
+        ),
+        nineImageWidget(info),
+        new Stack(
+          children: <Widget>[
+            new Align(
+                alignment: Alignment.centerLeft,
+                child: new Text(info.who,
+                    style:
+                        new TextStyle(color: Color(0xFFC3C5D0), fontSize: 13))),
+            new Align(
+                alignment: Alignment.centerRight,
+                child: new Text(createdAt,
+                    style:
+                        new TextStyle(color: Color(0xFFC3C5D0), fontSize: 13))),
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget nineImageWidget(TodayGank gank) {
+    List<Widget> _imgList = []; //九宫格
+    List<String> _images = gank.images;
+    num len = _images == null ? 0 : _images.length;
+    List<List<Widget>> rows = [];
+    // 通过双重for循环，生成每一张图片组件
+    for (var row = 0; row < getRow(len); row++) {
+      // row表示九宫格的行数，可能有1行2行或3行
+      List<Widget> rowArr = [];
+      for (var col = 0; col < 3; col++) {
+        // col为列数，固定有3列
+        num index = row * 3 + col;
+        double cellWidth = (screenWidth - 100) / 3;
+
+        if (index < len) {
+          String imageUrl = gank.type == "福利" ? gank.url : _images[index];
+          Image image = _images.length == 1
+              ? new Image.network(imageUrl,
+                  fit: BoxFit.cover, width: screenWidth / 3)
+              : new Image.network(imageUrl,
+                  fit: BoxFit.cover, width: cellWidth, height: cellWidth);
+          rowArr.add(new Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: image,
+          ));
+        }
+      }
+      rows.add(rowArr);
+    }
+    for (var row in rows) {
+      _imgList.add(new Row(
+        children: row,
+      ));
+    }
     return new Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+      padding: const EdgeInsets.fromLTRB(5.0, 10.0, 0.0, 20.0),
       child: new Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          new Text(info.desc,
-              style: new TextStyle(
-                  color: Color(0xFF404450), fontSize: 16, height: 1.1)),
-          new Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              new Text(info.who,
-                  style: new TextStyle(color: Color(0xFFC3C5D0), fontSize: 13))
-            ],
-          ),
-          new Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-            new Text(createdAt,
-                style: new TextStyle(color: Color(0xFFC3C5D0), fontSize: 13))
-          ])
-        ],
+        children: _imgList,
       ),
     );
+  }
+
+  // 获取行数，n表示图片的张数
+  int getRow(int n) {
+    int a = n % 3;
+    int b = n ~/ 3;
+    if (a != 0) {
+      return b + 1;
+    }
+    return b;
   }
 
   ///获取最新一天的干货

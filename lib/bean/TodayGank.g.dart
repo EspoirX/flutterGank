@@ -7,11 +7,14 @@ part of 'TodayGank.dart';
 // **************************************************************************
 
 TodayGank _$TodayGankFromJson(Map<String, dynamic> json) {
+  List<String> images = json.containsKey("images")
+      ? (json['images'] as List)?.map((e) => e as String)?.toList()
+      : new List<String>();
   return TodayGank(
       json['_id'] as String,
       json['createdAt'] as String,
       json['desc'] as String,
-      (json['images'] as List)?.map((e) => e as String)?.toList(),
+      images,
       json['publishedAt'] as String,
       json['source'] as String,
       json['type'] as String,

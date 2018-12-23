@@ -18,6 +18,10 @@ class _HomePageState extends State<HomePage> {
   int _tabIndex = 0; //当前下标
   var tabImages; //存储图标数组
   var pageBodys; //存储page数组
+  IndexPage _indexPage;
+  ReadPage _readPage;
+  MaterialPage _materialPage;
+  MyPage _myPage;
 
   void initData() {
     //二维数组存储图标
@@ -41,10 +45,10 @@ class _HomePageState extends State<HomePage> {
     ];
     //存储page
     pageBodys = [
-      new IndexPage(),
-      new ReadPage(),
-      new MaterialPage(),
-      new MyPage()
+      _indexPage == null ? new IndexPage() : _indexPage,
+      _readPage == null ? new ReadPage() : _readPage,
+      _materialPage == null ? new MaterialPage() : _materialPage,
+      _myPage == null ? new MyPage() : _myPage
     ];
   }
 
