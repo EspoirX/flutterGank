@@ -58,10 +58,8 @@ flutter:
      - images/ic_man.png
      - images/ic_man_selected.png
      - images/ic_search.png
-     - assets/superman.nma
-     - assets/superman.png
      - assets/robot.nima
-     - assets/robot.png
+     - assets/flutter.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

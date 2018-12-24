@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_gank/bean/TodayGank.dart';
+import 'package:flutter_gank/network/DioManager.dart';
 
 class IndexPage extends StatefulWidget {
   @override
@@ -12,10 +12,8 @@ class IndexPage extends StatefulWidget {
 class _IndexPageState extends State<IndexPage> {
   @override
   Widget build(BuildContext context) {
-    //_requestTodayGank();
-
-    return new Scaffold(
-        appBar: new AppBar(
+    return Scaffold(
+        appBar: AppBar(
           //状态栏字体颜色
           brightness: Brightness.light,
           //阴影
@@ -24,27 +22,27 @@ class _IndexPageState extends State<IndexPage> {
           backgroundColor: Colors.white,
           //标题
           centerTitle: true,
-          title: new Row(
+          title: Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              new Text("G", style: new TextStyle(color: Color(0xFF4286F4))),
-              new Text("e", style: new TextStyle(color: Color(0xFFE84436))),
-              new Text("e", style: new TextStyle(color: Color(0xFFFABC05))),
-              new Text("k", style: new TextStyle(color: Color(0xFF34A853))),
-              new Text(" News", style: new TextStyle(color: Color(0xFF4E5780)))
+              Text("G", style: TextStyle(color: Color(0xFF4286F4))),
+              Text("e", style: TextStyle(color: Color(0xFFE84436))),
+              Text("e", style: TextStyle(color: Color(0xFFFABC05))),
+              Text("k", style: TextStyle(color: Color(0xFF34A853))),
+              Text(" News", style: TextStyle(color: Color(0xFF4E5780)))
             ],
           ),
           actions: <Widget>[
-            new IconButton(
-              icon: new Icon(Icons.more_vert),
+            IconButton(
+              icon: Icon(Icons.more_vert),
               onPressed: () {},
               //标题颜色
               disabledColor: Color(0xFF707070),
               color: Color(0xFF707070),
             )
           ],
-          leading: new IconButton(
-            icon: new Icon(
+          leading: IconButton(
+            icon: Icon(
               Icons.search,
               color: Color(0xFF707070),
             ),
@@ -54,7 +52,7 @@ class _IndexPageState extends State<IndexPage> {
             color: Color(0xFF707070),
           ),
         ),
-        body: new GankListView());
+        body: GankListView());
   }
 }
 
@@ -64,7 +62,7 @@ class GankListView extends StatefulWidget {
 }
 
 class _GankListViewState extends State<GankListView> {
-  List<TodayGank> gankList = new List<TodayGank>();
+  List<TodayGank> gankList = List<TodayGank>();
   double screenWidth;
 
   @override
@@ -82,10 +80,10 @@ class _GankListViewState extends State<GankListView> {
       color: Color(0xFFF4F4F4),
       height: 32,
     );
-    return new Container(
+    return Container(
       color: Colors.white,
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-      child: new ListView.separated(
+      child: ListView.separated(
           itemCount: gankList.length,
           itemBuilder: (BuildContext context, int index) {
             return loadItemHolder(gankList[index]);
@@ -100,27 +98,24 @@ class _GankListViewState extends State<GankListView> {
     String createdAt = info.createdAt;
     createdAt = createdAt.substring(0, createdAt.indexOf('T'));
 
-    return new Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        new Text(
+        Text(
           info.desc,
-          style: new TextStyle(
-              color: Color(0xFF404450), fontSize: 16, height: 1.1),
+          style: TextStyle(color: Color(0xFF404450), fontSize: 16, height: 1.1),
         ),
         nineImageWidget(info),
-        new Stack(
+        Stack(
           children: <Widget>[
-            new Align(
+            Align(
                 alignment: Alignment.centerLeft,
-                child: new Text(info.who,
-                    style:
-                        new TextStyle(color: Color(0xFFC3C5D0), fontSize: 13))),
-            new Align(
+                child: Text(info.who,
+                    style: TextStyle(color: Color(0xFFC3C5D0), fontSize: 13))),
+            Align(
                 alignment: Alignment.centerRight,
-                child: new Text(createdAt,
-                    style:
-                        new TextStyle(color: Color(0xFFC3C5D0), fontSize: 13))),
+                child: Text(createdAt,
+                    style: TextStyle(color: Color(0xFFC3C5D0), fontSize: 13))),
           ],
         )
       ],
@@ -144,11 +139,11 @@ class _GankListViewState extends State<GankListView> {
         if (index < len) {
           String imageUrl = gank.type == "福利" ? gank.url : _images[index];
           Image image = _images.length == 1
-              ? new Image.network(imageUrl,
+              ? Image.network(imageUrl,
                   fit: BoxFit.cover, width: screenWidth / 3)
-              : new Image.network(imageUrl,
+              : Image.network(imageUrl,
                   fit: BoxFit.cover, width: cellWidth, height: cellWidth);
-          rowArr.add(new Padding(
+          rowArr.add(Padding(
             padding: const EdgeInsets.all(2.0),
             child: image,
           ));
@@ -157,13 +152,13 @@ class _GankListViewState extends State<GankListView> {
       rows.add(rowArr);
     }
     for (var row in rows) {
-      _imgList.add(new Row(
+      _imgList.add(Row(
         children: row,
       ));
     }
-    return new Padding(
+    return Padding(
       padding: const EdgeInsets.fromLTRB(5.0, 10.0, 0.0, 20.0),
-      child: new Column(
+      child: Column(
         children: _imgList,
       ),
     );
@@ -182,10 +177,8 @@ class _GankListViewState extends State<GankListView> {
   ///获取最新一天的干货
   Future _requestTodayGank() async {
     String url = "https://gank.io/api/today";
-    Dio dio = new Dio();
-    Response response = await dio.get(url);
-    var result = response.data['results'];
-
+    var response = await DioManager.instance.get(url);
+    var result = response['results'];
     List androidJson = result['Android'];
     List appJson = result['App'];
     List iOSJson = result['iOS'];
@@ -194,13 +187,13 @@ class _GankListViewState extends State<GankListView> {
     List recommendJson = result['瞎推荐'];
     List welfareJson = result['福利'];
 
-    List<TodayGank> androidList = new List<TodayGank>();
-    List<TodayGank> appList = new List<TodayGank>();
-    List<TodayGank> iOSList = new List<TodayGank>();
-    List<TodayGank> videoList = new List<TodayGank>();
-    List<TodayGank> dataList = new List<TodayGank>();
-    List<TodayGank> recommendList = new List<TodayGank>();
-    List<TodayGank> welfareList = new List<TodayGank>();
+    List<TodayGank> androidList = List<TodayGank>();
+    List<TodayGank> appList = List<TodayGank>();
+    List<TodayGank> iOSList = List<TodayGank>();
+    List<TodayGank> videoList = List<TodayGank>();
+    List<TodayGank> dataList = List<TodayGank>();
+    List<TodayGank> recommendList = List<TodayGank>();
+    List<TodayGank> welfareList = List<TodayGank>();
 
     for (int i = 0; i < androidJson.length; i++) {
       TodayGank todayGank = TodayGank.fromJson(androidJson[i]);

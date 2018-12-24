@@ -21,11 +21,4 @@ class TodayGank {
       _$TodayGankFromJson(json);
 
   Map<String, dynamic> toJson() => _$TodayGankToJson(this);
-
-  @override
-  String toString() {
-    return 'TodayGank{id: $id}';
-  }
-
-
 }
