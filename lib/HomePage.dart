@@ -13,15 +13,13 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
+  PageController _pageController;
+
   var bottomBarTitles = ['首页', '阅读', '资料库', '我的'];
   int _tabIndex = 0; //当前下标
   var tabImages; //存储图标数组
-  var pageBodys; //存储page数组
-  IndexPage _indexPage;
-  ReadPage _readPage;
-  MaterialPage _materialPage;
-  MyPage _myPage;
 
   void initData() {
     //二维数组存储图标
@@ -43,19 +41,12 @@ class _HomePageState extends State<HomePage> {
         getTabImage('images/ic_man_selected.png', 1)
       ]
     ];
-    //存储page
-    pageBodys = [
-      _indexPage == null ? new IndexPage() : _indexPage,
-      _readPage == null ? new ReadPage() : _readPage,
-      _materialPage == null ? new MaterialPage() : _materialPage,
-      _myPage == null ? new MyPage() : _myPage
-    ];
   }
 
   ///创建标题
   Text getTabTitle(int curIndex) {
-    return new Text(bottomBarTitles[curIndex],
-        style: new TextStyle(
+    return Text(bottomBarTitles[curIndex],
+        style: TextStyle(
             color: curIndex == _tabIndex
                 ? const Color(0xFF2FA0F0)
                 : const Color(0xFFA5A7B6)));
@@ -63,7 +54,7 @@ class _HomePageState extends State<HomePage> {
 
   ///创建ImageIcon
   ImageIcon getTabImage(String path, int index) {
-    return new ImageIcon(
+    return ImageIcon(
       AssetImage(path),
       size: 20,
       color: index == 0 ? const Color(0xFFA5A7B6) : const Color(0xFF2FA0F0),
@@ -79,28 +70,47 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     initData();
-    return new Scaffold(
-      body: pageBodys[_tabIndex],
-      bottomNavigationBar: new BottomNavigationBar(
+    _pageController = PageController(initialPage: this._tabIndex);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _pageController.dispose();
+  }
+
+  void onTap(int index) {
+    _pageController.jumpToPage(index);
+  }
+
+  void onPageChanged(int index) {
+    setState(() {
+      this._tabIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: PageView(
+        children: <Widget>[IndexPage(), ReadPage(), MaterialPage(), MyPage()],
+        controller: _pageController,
+        onPageChanged: onPageChanged,
+        physics: NeverScrollableScrollPhysics(),//禁止滑动
+      ),
+      bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _tabIndex,
         fixedColor: Colors.white,
-        onTap: (index) {
-          setState(() {
-            _tabIndex = index; //更新下标
-          });
-        },
+        onTap: onTap,
         items: [
-          new BottomNavigationBarItem(
-              title: getTabTitle(0), icon: getTabIcon(0)),
-          new BottomNavigationBarItem(
-              title: getTabTitle(1), icon: getTabIcon(1)),
-          new BottomNavigationBarItem(
-              title: getTabTitle(2), icon: getTabIcon(2)),
-          new BottomNavigationBarItem(
-              title: getTabTitle(3), icon: getTabIcon(3))
+          BottomNavigationBarItem(title: getTabTitle(0), icon: getTabIcon(0)),
+          BottomNavigationBarItem(title: getTabTitle(1), icon: getTabIcon(1)),
+          BottomNavigationBarItem(title: getTabTitle(2), icon: getTabIcon(2)),
+          BottomNavigationBarItem(title: getTabTitle(3), icon: getTabIcon(3))
         ],
       ),
     );

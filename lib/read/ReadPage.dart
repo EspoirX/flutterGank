@@ -11,7 +11,7 @@ class ReadPage extends StatefulWidget {
 }
 
 class _ReadPageState extends State<ReadPage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   List<CategoryWow> categoryList = new List<CategoryWow>();
 
   TabController _tabController;
@@ -20,6 +20,8 @@ class _ReadPageState extends State<ReadPage>
   void initState() {
     super.initState();
     _requestCategory();
+    _tabController =
+        new TabController(length: categoryList.length, vsync: this);
   }
 
   @override
@@ -30,8 +32,6 @@ class _ReadPageState extends State<ReadPage>
 
   @override
   Widget build(BuildContext context) {
-    _tabController =
-        new TabController(length: categoryList.length, vsync: this);
     return Scaffold(
         appBar: AppBar(
           //状态栏字体颜色
@@ -81,9 +81,13 @@ class _ReadPageState extends State<ReadPage>
       categoryList.add(category);
     }
     setState(() {
-      this.categoryList = categoryList;
+      _tabController =
+          new TabController(length: categoryList.length, vsync: this);
     });
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class ReadListView extends StatefulWidget {
@@ -95,8 +99,8 @@ class ReadListView extends StatefulWidget {
   _ReadListViewState createState() => _ReadListViewState(category);
 }
 
-
-class _ReadListViewState extends State<ReadListView> with AutomaticKeepAliveClientMixin{
+class _ReadListViewState extends State<ReadListView>
+    with AutomaticKeepAliveClientMixin {
   //继承 AutomaticKeepAliveClientMixin 保存状态
   final CategoryWow category;
   List<XianDuInfo> xianDuList = new List();
