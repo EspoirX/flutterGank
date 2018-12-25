@@ -54,6 +54,7 @@ class _IndexPageState extends State<IndexPage> {
         ),
         body: GankListView());
   }
+
 }
 
 class GankListView extends StatefulWidget {

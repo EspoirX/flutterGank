@@ -95,7 +95,9 @@ class ReadListView extends StatefulWidget {
   _ReadListViewState createState() => _ReadListViewState(category);
 }
 
-class _ReadListViewState extends State<ReadListView> {
+
+class _ReadListViewState extends State<ReadListView> with AutomaticKeepAliveClientMixin{
+  //继承 AutomaticKeepAliveClientMixin 保存状态
   final CategoryWow category;
   List<XianDuInfo> xianDuList = new List();
   double screenWidth;
@@ -139,24 +141,45 @@ class _ReadListViewState extends State<ReadListView> {
   loadItemHolder(XianDuInfo info, int index) {
     String createdAt = info.createdAt;
     createdAt = createdAt.substring(0, createdAt.indexOf('T'));
-    List<Widget> widgetArray = [];
-    if (info.cover != null || info.cover != "") {
-      widgetArray.add(Container(
-        width: 100,
-        height: 80,
-        decoration: BoxDecoration(
-            image: DecorationImage(
-              image: NetworkImage(info.cover),
-              fit: BoxFit.cover,
-            ),
-            borderRadius: BorderRadius.all(Radius.circular(5))),
-      ));
+    bool isHasImage =
+        info.cover != null && info.cover != "" && info.cover != "none";
+    if (isHasImage) {
+      return getImageViewHolder(info, createdAt, isHasImage);
+    } else {
+      return getTextViewHolder(info, createdAt, isHasImage);
     }
-    widgetArray.add(Container(
+  }
+
+  Widget getTextViewHolder(XianDuInfo info, String createdAt, bool isHasImage) {
+    return getCommItemUI(info, createdAt, isHasImage);
+  }
+
+  Widget getImageViewHolder(
+      XianDuInfo info, String createdAt, bool isHasImage) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          width: 100,
+          height: 80,
+          decoration: BoxDecoration(
+              image: DecorationImage(
+                image: NetworkImage(info.cover),
+                fit: BoxFit.cover,
+              ),
+              borderRadius: BorderRadius.all(Radius.circular(5))),
+        ),
+        getCommItemUI(info, createdAt, isHasImage)
+      ],
+    );
+  }
+
+  Widget getCommItemUI(XianDuInfo info, String createdAt, bool isHasImage) {
+    return Container(
       height: 80, //指定高低，不然就包裹
-      width: info.cover != null || info.cover != ""
-          ? screenWidth - 140
-          : screenWidth - 32, //不设置宽度 text 不会换行
+      width: isHasImage ? screenWidth - 140 : screenWidth - 32,
       padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
       child: Stack(
         children: <Widget>[
@@ -188,7 +211,7 @@ class _ReadListViewState extends State<ReadListView> {
                   padding: const EdgeInsets.only(left: 8.0),
                   child: Text(
                     info.site.name + "." + createdAt,
-                    style: TextStyle(color: Color(0xFFC1C3CE)),
+                    style: TextStyle(color: Color(0xFFC1C3CE), fontSize: 10),
                   ),
                 )
               ],
@@ -196,13 +219,6 @@ class _ReadListViewState extends State<ReadListView> {
           )
         ],
       ),
-    ));
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      mainAxisSize: MainAxisSize.max,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: widgetArray,
     );
   }
 
@@ -221,4 +237,7 @@ class _ReadListViewState extends State<ReadListView> {
       this.xianDuList = list;
     });
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
