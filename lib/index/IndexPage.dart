@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_gank/bean/TodayGank.dart';
 import 'package:flutter_gank/network/DioManager.dart';
@@ -245,7 +243,7 @@ class _GankListViewState extends State<GankListView> {
 
   ///刷新列表
   Future _handlerRefresh() async {
-    await Future.delayed(Duration(seconds: 3), () {
+    await Future.delayed(Duration(seconds: 2), () {
       _requestTodayGank();
     });
   }

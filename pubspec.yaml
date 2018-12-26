@@ -49,17 +49,8 @@ flutter:
   #  - images/a_dot_ham.jpeg
 
   assets:
-     - images/ic_book.png
-     - images/ic_book_selected.png
-     - images/ic_data.png
-     - images/ic_data_selected.png
-     - images/ic_home.png
-     - images/ic_home_selected.png
-     - images/ic_man.png
-     - images/ic_man_selected.png
-     - images/ic_search.png
-     - assets/robot.nima
-     - assets/flutter.png
+     - images/
+     - assets/
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

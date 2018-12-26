@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gank/HomePage.dart';
 import 'package:flutter_gank/view/GradientButton.dart';
 import 'package:nima/nima_actor.dart';
-import 'package:flare_flutter/flare_actor.dart';
 
 class SplashPage extends StatefulWidget {
   @override

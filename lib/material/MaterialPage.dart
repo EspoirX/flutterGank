@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nima/nima_actor.dart';
-import 'package:flare_flutter/flare_actor.dart';
 
 class MaterialPage extends StatefulWidget {
   @override

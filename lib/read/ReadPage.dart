@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter_gank/bean/CategoryWow.dart';
 import 'package:flutter_gank/bean/XianDuInfo.dart';
-import 'package:nima/nima_actor.dart';
 import 'package:flutter_gank/network/DioManager.dart';
 
 class ReadPage extends StatefulWidget {
@@ -72,6 +71,7 @@ class _ReadPageState extends State<ReadPage>
         ));
   }
 
+  ///获取类型
   Future _requestCategory() async {
     String categoryUrl = "https://gank.io/api/xiandu/category/wow";
     var categoryData = await DioManager.instance.get(categoryUrl);
@@ -149,11 +149,6 @@ class _ReadListViewState extends State<ReadListView>
                 padding: EdgeInsets.only(top: 16),
                 child: loadItemHolder(xianDuList[index], index),
               );
-            } else if (index == xianDuList.length - 1) {
-              return Padding(
-                padding: EdgeInsets.only(bottom: 16),
-                child: loadItemHolder(xianDuList[index], index),
-              );
             } else if (index == xianDuList.length) {
               return _buildLoadView();
             } else {
@@ -185,10 +180,12 @@ class _ReadListViewState extends State<ReadListView>
     }
   }
 
+  ///没图片的item类型
   Widget getTextViewHolder(XianDuInfo info, String createdAt, bool isHasImage) {
     return getCommItemUI(info, createdAt, isHasImage);
   }
 
+  ///有图片的item类型
   Widget getImageViewHolder(
       XianDuInfo info, String createdAt, bool isHasImage) {
     return Row(
@@ -211,6 +208,7 @@ class _ReadListViewState extends State<ReadListView>
     );
   }
 
+  ///公共UI
   Widget getCommItemUI(XianDuInfo info, String createdAt, bool isHasImage) {
     return Container(
       height: 80, //指定高低，不然就包裹
@@ -257,16 +255,23 @@ class _ReadListViewState extends State<ReadListView>
     );
   }
 
+  ///加载更多UI
   Widget _buildLoadView() {
     return Container(
-      padding: EdgeInsets.all(18),
+      constraints: BoxConstraints.expand(height: 50),
       child: Center(
-        child: Text("加载中..."),
+        child: FlareActor(
+          "assets/loading.flr",
+          alignment: Alignment.center,
+          fit: BoxFit.cover,
+          animation: "Loading",
+        ),
       ),
-      color: Colors.white70,
+      color: Colors.white,
     );
   }
 
+  ///请求网络
   Future _requestGankList(String id, bool isLoadMore) async {
     String url = "https://gank.io/api/xiandu/data/id/" +
         id +
@@ -289,19 +294,21 @@ class _ReadListViewState extends State<ReadListView>
     });
   }
 
+  ///下拉刷新
   Future _handlerRefresh(String id) async {
-    await Future.delayed(Duration(seconds: 3), () {
+    await Future.delayed(Duration(seconds: 2), () {
       page = 1;
       _requestGankList(id, false);
     });
   }
 
+  ///加载更多
   Future _getMoreData(String id) async {
     if (!isLoading) {
       setState(() {
         isLoading = true;
       });
-      await Future.delayed(Duration(seconds: 3), () {
+      await Future.delayed(Duration(seconds: 2), () {
         page++;
         _requestGankList(id, true);
       });
