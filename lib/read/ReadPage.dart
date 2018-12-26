@@ -105,13 +105,30 @@ class _ReadListViewState extends State<ReadListView>
   final CategoryWow category;
   List<XianDuInfo> xianDuList = new List();
   double screenWidth;
+  int page = 1;
+  bool isLoading = false;
+  ScrollController _scrollController;
 
   _ReadListViewState(this.category);
 
   @override
   void initState() {
-    _requestGankList(category.id);
+    _scrollController = new ScrollController();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        //滑动到底部
+        _getMoreData(category.id);
+      }
+    });
+    _requestGankList(category.id, false);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
   }
 
   @override
@@ -121,16 +138,24 @@ class _ReadListViewState extends State<ReadListView>
       color: Color(0xFFF4F4F4),
       height: 32,
     );
-    return Container(
-      padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
-      color: Colors.white,
-      child: ListView.separated(
+    return RefreshIndicator(
+      child: Container(
+        padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+        color: Colors.white,
+        child: ListView.separated(
           itemBuilder: (BuildContext context, int index) {
             if (index == 0) {
               return Padding(
                 padding: EdgeInsets.only(top: 16),
                 child: loadItemHolder(xianDuList[index], index),
               );
+            } else if (index == xianDuList.length - 1) {
+              return Padding(
+                padding: EdgeInsets.only(bottom: 16),
+                child: loadItemHolder(xianDuList[index], index),
+              );
+            } else if (index == xianDuList.length) {
+              return _buildLoadView();
             } else {
               return loadItemHolder(xianDuList[index], index);
             }
@@ -138,7 +163,13 @@ class _ReadListViewState extends State<ReadListView>
           separatorBuilder: (BuildContext context, int index) {
             return divider1;
           },
-          itemCount: xianDuList.length),
+          itemCount: xianDuList.length == 0 ? 0 : xianDuList.length + 1,
+          controller: _scrollController,
+        ),
+      ),
+      onRefresh: () {
+        return _handlerRefresh(category.id);
+      },
     );
   }
 
@@ -226,9 +257,21 @@ class _ReadListViewState extends State<ReadListView>
     );
   }
 
-  Future _requestGankList(String id) async {
-    String url =
-        "https://gank.io/api/xiandu/data/id/" + id + "/count/10/page/1";
+  Widget _buildLoadView() {
+    return Container(
+      padding: EdgeInsets.all(18),
+      child: Center(
+        child: Text("加载中..."),
+      ),
+      color: Colors.white70,
+    );
+  }
+
+  Future _requestGankList(String id, bool isLoadMore) async {
+    String url = "https://gank.io/api/xiandu/data/id/" +
+        id +
+        "/count/10/page/" +
+        page.toString();
     var response = await DioManager.instance.get(url);
     List results = response['results'];
     List<XianDuInfo> list = new List();
@@ -236,10 +279,33 @@ class _ReadListViewState extends State<ReadListView>
       XianDuInfo info = XianDuInfo.fromJson(results[i]);
       list.add(info);
     }
-
     setState(() {
-      this.xianDuList = list;
+      if (isLoadMore) {
+        this.xianDuList.addAll(list);
+      } else {
+        this.xianDuList = list;
+      }
+      isLoading = false;
     });
+  }
+
+  Future _handlerRefresh(String id) async {
+    await Future.delayed(Duration(seconds: 3), () {
+      page = 1;
+      _requestGankList(id, false);
+    });
+  }
+
+  Future _getMoreData(String id) async {
+    if (!isLoading) {
+      setState(() {
+        isLoading = true;
+      });
+      await Future.delayed(Duration(seconds: 3), () {
+        page++;
+        _requestGankList(id, true);
+      });
+    }
   }
 
   @override

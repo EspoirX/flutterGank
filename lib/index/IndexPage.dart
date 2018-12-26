@@ -9,55 +9,56 @@ class IndexPage extends StatefulWidget {
   _IndexPageState createState() => _IndexPageState();
 }
 
-class _IndexPageState extends State<IndexPage> with AutomaticKeepAliveClientMixin{
+class _IndexPageState extends State<IndexPage>
+    with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          //状态栏字体颜色
-          brightness: Brightness.light,
-          //阴影
-          elevation: 0,
-          //背景
-          backgroundColor: Colors.white,
-          //标题
-          centerTitle: true,
-          title: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text("G", style: TextStyle(color: Color(0xFF4286F4))),
-              Text("e", style: TextStyle(color: Color(0xFFE84436))),
-              Text("e", style: TextStyle(color: Color(0xFFFABC05))),
-              Text("k", style: TextStyle(color: Color(0xFF34A853))),
-              Text(" News", style: TextStyle(color: Color(0xFF4E5780)))
-            ],
-          ),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.more_vert),
-              onPressed: () {},
-              //标题颜色
-              disabledColor: Color(0xFF707070),
-              color: Color(0xFF707070),
-            )
+      appBar: AppBar(
+        //状态栏字体颜色
+        brightness: Brightness.light,
+        //阴影
+        elevation: 0,
+        //背景
+        backgroundColor: Colors.white,
+        //标题
+        centerTitle: true,
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text("G", style: TextStyle(color: Color(0xFF4286F4))),
+            Text("e", style: TextStyle(color: Color(0xFFE84436))),
+            Text("e", style: TextStyle(color: Color(0xFFFABC05))),
+            Text("k", style: TextStyle(color: Color(0xFF34A853))),
+            Text(" News", style: TextStyle(color: Color(0xFF4E5780)))
           ],
-          leading: IconButton(
-            icon: Icon(
-              Icons.search,
-              color: Color(0xFF707070),
-            ),
-            onPressed: null,
+        ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.more_vert),
+            onPressed: () {},
             //标题颜色
             disabledColor: Color(0xFF707070),
             color: Color(0xFF707070),
+          )
+        ],
+        leading: IconButton(
+          icon: Icon(
+            Icons.search,
+            color: Color(0xFF707070),
           ),
+          onPressed: null,
+          //标题颜色
+          disabledColor: Color(0xFF707070),
+          color: Color(0xFF707070),
         ),
-        body: GankListView());
+      ),
+      body: GankListView(),
+    );
   }
 
   @override
   bool get wantKeepAlive => true;
-
 }
 
 class GankListView extends StatefulWidget {
@@ -84,17 +85,20 @@ class _GankListViewState extends State<GankListView> {
       color: Color(0xFFF4F4F4),
       height: 32,
     );
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-      child: ListView.separated(
-          itemCount: gankList.length,
-          itemBuilder: (BuildContext context, int index) {
-            return loadItemHolder(gankList[index]);
-          },
-          separatorBuilder: (BuildContext context, int index) {
-            return divider1;
-          }),
+    return RefreshIndicator(
+      child: Container(
+        color: Colors.white,
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+        child: ListView.separated(
+            itemCount: gankList.length,
+            itemBuilder: (BuildContext context, int index) {
+              return loadItemHolder(gankList[index]);
+            },
+            separatorBuilder: (BuildContext context, int index) {
+              return divider1;
+            }),
+      ),
+      onRefresh: _handlerRefresh,
     );
   }
 
@@ -236,6 +240,13 @@ class _GankListViewState extends State<GankListView> {
       gankList.addAll(dataList);
       gankList.addAll(recommendList);
       gankList.addAll(welfareList);
+    });
+  }
+
+  ///刷新列表
+  Future _handlerRefresh() async {
+    await Future.delayed(Duration(seconds: 3), () {
+      _requestTodayGank();
     });
   }
 }
